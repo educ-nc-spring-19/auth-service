@@ -16,8 +16,8 @@ public class SystemRole {
     @GeneratedValue
     private UUID id;
 
-    private String roleName;
-    private String roleDescription;
+    private String name;
+    private String description;
 
     @Column(columnDefinition = "timestamp with time zone")
     private OffsetDateTime createdDate;
