@@ -1,6 +1,8 @@
 package com.educ_nc_spring_19.auth_service.model.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
@@ -22,17 +24,29 @@ public class SystemRole {
     @Column(columnDefinition = "timestamp with time zone")
     private OffsetDateTime createdDate;
 
-    @ManyToOne
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by_user_id")
     private User createdByUser;
+
+    @Column(name = "created_by_user_id", insertable = false, updatable = false)
+    private UUID createdByUserId;
 
     @Column(columnDefinition = "timestamp with time zone")
     private OffsetDateTime updatedDate;
 
-    @ManyToOne
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "updated_by_user_id")
     private User updatedByUser;
 
-    @ManyToMany(mappedBy = "systemRoles")
+    @Column(name = "updated_by_user_id", insertable = false, updatable = false)
+    private UUID updatedByUserId;
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @ManyToMany(mappedBy = "systemRoles", fetch = FetchType.LAZY)
     private Set<User> users = new HashSet<>();
 }
