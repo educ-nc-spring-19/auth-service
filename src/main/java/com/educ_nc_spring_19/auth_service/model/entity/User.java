@@ -1,6 +1,8 @@
 package com.educ_nc_spring_19.auth_service.model.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
@@ -31,24 +33,40 @@ public class User {
     @Column(columnDefinition = "timestamp with time zone")
     private OffsetDateTime createdDate;
 
-    @ManyToOne
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by_user_id", referencedColumnName = "id")
     private User createdByUser;
+
+    @Column(name = "created_by_user_id", insertable = false, updatable = false)
+    private UUID createdByUserId;
 
     @Column(columnDefinition = "timestamp with time zone")
     private OffsetDateTime updatedDate;
 
-    @ManyToOne
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "updated_by_user_id", referencedColumnName = "id")
     private User updatedByUser;
 
-    @OneToMany(mappedBy = "createdByUser")
+    @Column(name = "updated_by_user_id", insertable = false, updatable = false)
+    private UUID updatedByUserId;
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @OneToMany(mappedBy = "createdByUser", fetch = FetchType.LAZY)
     private List<SystemRole> createdSystemRoles;
 
-    @OneToMany(mappedBy = "updatedByUser")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @OneToMany(mappedBy = "updatedByUser", fetch = FetchType.LAZY)
     private List<SystemRole> updatedSystemRoles;
 
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_role_junction",
             joinColumns = { @JoinColumn(name = "user_id") },
