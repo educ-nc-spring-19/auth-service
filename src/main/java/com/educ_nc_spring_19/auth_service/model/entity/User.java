@@ -1,32 +1,41 @@
 package com.educ_nc_spring_19.auth_service.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Data
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue
     private UUID id;
 
-    private String firstName;
-    private String lastName;
+    private String firstName; //? зачем
+    private String lastName; //? зачем
+
     @Column(name = "active", nullable = false)
-    private Boolean isActive;
+    private boolean isActive;
+
     @Column(nullable = false)
     private String login;
-    private String emailAddress;
+
+    @Column(nullable = false)
+    private String emailAddress; //? почему не column?
+
+    @JsonIgnore
+    @Column(nullable = false)
+    private String password;
+
     @Column(nullable = false, columnDefinition = "text")
     private String credential;
 
@@ -57,12 +66,12 @@ public class User {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "createdByUser", fetch = FetchType.LAZY)
-    private List<SystemRole> createdSystemRoles;
+    private List<SystemRole> createdSystemRoles; //? зачем
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "updatedByUser", fetch = FetchType.LAZY)
-    private List<SystemRole> updatedSystemRoles;
+    private List<SystemRole> updatedSystemRoles; //? зачем
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
@@ -73,4 +82,71 @@ public class User {
             inverseJoinColumns = { @JoinColumn(name = "system_role_id") }
     )
     private Set<SystemRole> systemRoles = new HashSet<>();
+
+    public void addRole(SystemRole role) {
+        if (systemRoles == null) systemRoles = new HashSet<>();
+        systemRoles.add(role);
+    }
+
+    private Collection<? extends GrantedAuthority> authorities;
+
+
+    public User(String firstName, String lastName, String login, String email, String password,
+                Collection<? extends GrantedAuthority> authorities, Set<SystemRole> systemRoles,
+                List<SystemRole> createdSystemRoles, List<SystemRole> updatedSystemRoles, User user, UUID createdByUserId) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.login = login;
+        this.emailAddress = email;
+        this.password = password;
+        this.authorities = authorities;
+        this.systemRoles = systemRoles;
+        this.createdDate = OffsetDateTime.now();
+        this.createdSystemRoles = createdSystemRoles;
+        this.updatedSystemRoles = updatedSystemRoles;
+        this.createdByUser = user;
+        this.createdByUserId = createdByUserId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return login;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    //TODO: constructors
 }
