@@ -39,10 +39,6 @@ public class SignUpRequest {
 
     @Getter @Setter
     @Size(max = 255)
-    private Collection<? extends GrantedAuthority> authorities; //?
-
-    @Getter @Setter
-    @Size(max = 255)
     private Set<SystemRole> systemRoles; //? сделать их все по названиям что ли
 
     @Getter @Setter

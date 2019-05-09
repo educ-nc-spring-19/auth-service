@@ -3,6 +3,7 @@ package com.educ_nc_spring_19.auth_service.model.entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
@@ -13,7 +14,7 @@ import java.util.UUID;
 @Data
 
 @Entity
-public class SystemRole {
+public class SystemRole implements GrantedAuthority {
     @Id
     @GeneratedValue
     private UUID id;
@@ -49,4 +50,11 @@ public class SystemRole {
     @ToString.Exclude
     @ManyToMany(mappedBy = "systemRoles", fetch = FetchType.LAZY)
     private Set<User> users = new HashSet<>();
+
+    public SystemRole(){}
+
+    @Override
+    public String getAuthority() {
+        return name;
+    }
 }

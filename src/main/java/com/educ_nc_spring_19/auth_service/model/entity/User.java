@@ -81,25 +81,22 @@ public class User implements UserDetails {
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "system_role_id") }
     )
-    private Set<SystemRole> systemRoles = new HashSet<>();
+    private Collection<SystemRole> systemRoles = new HashSet<>();
 
     public void addRole(SystemRole role) {
         if (systemRoles == null) systemRoles = new HashSet<>();
         systemRoles.add(role);
     }
 
-    private Collection<? extends GrantedAuthority> authorities;
+    public User(){}
 
-
-    public User(String firstName, String lastName, String login, String email, String password,
-                Collection<? extends GrantedAuthority> authorities, Set<SystemRole> systemRoles,
+    public User(String firstName, String lastName, String login, String email, String password, Set<SystemRole> systemRoles,
                 List<SystemRole> createdSystemRoles, List<SystemRole> updatedSystemRoles, User user, UUID createdByUserId) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.login = login;
         this.emailAddress = email;
         this.password = password;
-        this.authorities = authorities;
         this.systemRoles = systemRoles;
         this.createdDate = OffsetDateTime.now();
         this.createdSystemRoles = createdSystemRoles;
@@ -114,8 +111,8 @@ public class User implements UserDetails {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+    public Collection<SystemRole> getAuthorities() {
+        return this.systemRoles;
     }
 
     @Override
