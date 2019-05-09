@@ -27,6 +27,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -57,9 +58,11 @@ public class AuthController {
                 )
         );
 
+        System.out.println("I");
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
+        System.out.println("am");
         String jwt = tokenProvider.generateToken(authentication);
+        System.out.println("here!");
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
 
@@ -75,14 +78,32 @@ public class AuthController {
                     HttpStatus.BAD_REQUEST);
         }
 
+        User creator = userRepository.findById(signUpRequest.getCreatedByUserId()).orElse(null);
+
+        Set<SystemRole> systemRoles = new HashSet<>();
+        List<SystemRole> updatedSystemRoles = new ArrayList<>();
+        List<SystemRole> createdSystemRoles = new ArrayList<>();
+
+        for (String s : signUpRequest.getSystemRolesNames()) {
+            systemRoles.add(systemRoleRepository.findByName(s));
+        }
+
+        for (String s : signUpRequest.getCreatedSystemRoles()) {
+            updatedSystemRoles.add(systemRoleRepository.findByName(s));
+        }
+
+        for (String s : signUpRequest.getUpdatedSystemRoles()) {
+            createdSystemRoles.add(systemRoleRepository.findByName(s));
+        }
+
         // Creating user's account
         User user = new User(signUpRequest.getFirstName(), signUpRequest.getLastName(), signUpRequest.getLogin(),
-                signUpRequest.getEmail(), signUpRequest.getPassword(), signUpRequest.getSystemRoles(), signUpRequest.getCreatedSystemRoles(),
-                signUpRequest.getUpdatedSystemRoles(), signUpRequest.getUser(), signUpRequest.getCreatedByUserId());
+                signUpRequest.getEmail(), signUpRequest.getPassword(), systemRoles, updatedSystemRoles, createdSystemRoles, creator,
+                signUpRequest.getCreatedByUserId());
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        SystemRole userRole = systemRoleRepository.findByName(RoleName.ROLE_USER.toString());
+        SystemRole userRole = systemRoleRepository.findByName(RoleName.USER.toString());
         if (userRole == null) {
             throw new AppException("User Role not set.");
         }

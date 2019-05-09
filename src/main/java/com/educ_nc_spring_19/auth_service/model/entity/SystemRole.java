@@ -53,6 +53,14 @@ public class SystemRole implements GrantedAuthority {
 
     public SystemRole(){}
 
+    public SystemRole(String name, String description, User createdByUser, UUID createdByUserId){
+        this.name = name;
+        this.description = description;
+        this.createdDate = OffsetDateTime.now();
+        this.createdByUser = createdByUser;
+        this.createdByUserId = createdByUserId;
+    }
+
     @Override
     public String getAuthority() {
         return name;

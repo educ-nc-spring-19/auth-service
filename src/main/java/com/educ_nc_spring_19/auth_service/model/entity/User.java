@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
@@ -100,7 +99,7 @@ public class User implements UserDetails {
         this.systemRoles = systemRoles;
         this.createdDate = OffsetDateTime.now();
         this.createdSystemRoles = createdSystemRoles;
-        this.updatedSystemRoles = updatedSystemRoles;
+        this.updatedSystemRoles = updatedSystemRoles; //TODO: это нужно вообще?
         this.createdByUser = user;
         this.createdByUserId = createdByUserId;
     }
